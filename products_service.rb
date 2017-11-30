@@ -9,6 +9,9 @@ require 'mongoid'
 require 'roar/json/hal'
 require 'rack/conneg'
 
+require 'sinatra-websocket'
+
+
 configure do
   Mongoid.load!("config/mongoid.yml", settings.environment)
   set :server, :puma # default to puma for performance
@@ -44,6 +47,29 @@ module ProductRepresenter
   end
 end
 class App < Sinatra::Base
+
+  set :server, 'thin'
+  set :sockets, []
+
+  get '/' do
+    if !request.websocket?
+      erb :index
+    else
+      request.websocket do |ws|
+        ws.onopen do
+          ws.send("Hello World!")
+          settings.sockets << ws
+        end
+        ws.onmessage do |msg|
+          EM.next_tick { settings.sockets.each{|s| s.send(msg) } }
+        end
+        ws.onclose do
+          warn("websocket closed")
+          settings.sockets.delete(ws)
+        end
+      end
+    end
+  end
 
   get '/products/?' do
     products = Product.all.order_by(:created_at => 'desc')

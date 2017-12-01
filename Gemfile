@@ -17,4 +17,6 @@ gem 'roar'
 gem 'multi_json'
 
 # Websockets
-gem 'sinatra-websocket'
+#gem 'sinatra-websocket'
+gem 'faye-websocket'
+gem 'websocket-extensions'

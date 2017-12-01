@@ -9,8 +9,9 @@ require 'mongoid'
 require 'roar/json/hal'
 require 'rack/conneg'
 
-require 'sinatra-websocket'
-
+#require 'sinatra-websocket'
+require 'faye/websocket'
+require 'websocket/extensions'
 
 configure do
   Mongoid.load!("config/mongoid.yml", settings.environment)
